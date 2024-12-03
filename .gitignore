@@ -1,0 +1,21 @@
+# Node modules
+/node_modules/
+
+# Build output
+/dist/
+
+# TypeScript files (source maps, compiled .js, etc.)
+*.tsbuildinfo
+
+# Log files
+*.log
+
+# VSCode settings folder (if using VSCode)
+.vscode/
+
+# npm-debug.log (in case of npm errors)
+npm-debug.log*
+
+# OS-specific files (macOS, Linux, Windows)
+.DS_Store
+Thumbs.db
