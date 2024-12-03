@@ -2,7 +2,7 @@
 /node_modules/
 
 # Build output
-/dist/
+# /dist/
 
 # TypeScript files (source maps, compiled .js, etc.)
 *.tsbuildinfo
