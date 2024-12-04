@@ -1,6 +1,17 @@
-### Take fresh changes(at microservice repo)
+# shared-lib-be
 
-#### required to delete package-lock.json
+Shared common nodejs helper lib used by all microservices
+
+### Step1: build
+
+- Make changes in shared-lib-be
+- run `npm run build `(it will build js file in `dist/` which will be imported by other microservices)
+
+### Step 2: Install in microservice
+
+To install into other microservices. Follow
+
+#### clean `node_module` & `package-lock.json`
 
 ```sh
 npm cache clean --force
@@ -9,35 +20,50 @@ rm package-lock.json
 npm install
 ```
 
-## Link with microservice in local
+#### Intall in Local
 
-### Method 1: via links
+This will generate local link to connect with local microservice
 
 ```sh
-cd /path/to/my-shared-lib
+cd /path/to/shared-lib-be
 npm link
-
-cd /path/to/other-microservice
-npm link my-shared-lib
-
-
-import { someFunction } from 'my-shared-lib';
 ```
 
-### unlink
-
-```sh
-npm unlink my-shared-lib
-npm unlink
+This will import `cng-lib` to other node microservice (`cng-lib` is app name mention in `package.json`)
 
 ```
+cd /path/to/microservice
+npm link cng-lib
 
-### Method 2: via npm install
+import { someFunction } from 'cng-lib';
+```
+
+#### Intall in Dev env
+
+```json
+{
+  "dependencies": {
+    "cng-lib": "git+https://github.com/chatngift/shared-lib-be.git#development"
+  }
+}
+```
+
+#### Intall in Prod env
+
+```json
+{
+  "dependencies": {
+    "cng-lib": "git+https://github.com/chatngift/shared-lib-be.git#master"
+  }
+}
+```
+
+### Other method install via npm in local
 
 ```sh
 cd /path/to/other-microservice
-npm install /path/to/my-shared-lib
-import { someFunction } from 'my-shared-lib';
+npm install /path/to/shared-lib-be
+import { someFunction } from 'cng-lib';
 
-npm uninstall my-shared-lib
+npm uninstall cng-lib
 ```
