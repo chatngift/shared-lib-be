@@ -11,4 +11,3 @@ export declare const DateUtils: {
         _updatedDate: Date;
     };
 };
-//# sourceMappingURL=date.d.ts.map

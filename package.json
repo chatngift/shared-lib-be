@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chatngift/shared-lib-be-nodejs.git"
+    "url": "https://github.com/chatngift/shared-lib-be.git"
   },
   "license": "MIT"
 }

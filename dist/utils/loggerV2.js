@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Logger = void 0;
-class Logger {
+exports.LoggerV2 = void 0;
+class LoggerV2 {
     static log(message) {
         console.log(`[INFO]: ${message}`);
     }
@@ -12,4 +12,4 @@ class Logger {
         console.warn(`[WARN]: ${message}`);
     }
 }
-exports.Logger = Logger;
+exports.LoggerV2 = LoggerV2;

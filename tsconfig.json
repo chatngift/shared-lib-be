@@ -4,8 +4,8 @@
     "module": "CommonJS", // Use CommonJS for Node.js compatibility
     "strict": true, // Enable strict type checking
     "declaration": true, // Generates .d.ts files alongside .js
-    "declarationMap": true, // Generates source maps for the .d.ts files (optional)
-    "sourceMap": true, // Generates .map files for .js files (optional)
+    "declarationMap": false, // Generates source maps for the .d.ts files (optional)
+    "sourceMap": false, // Generates .map files for .js files (optional)
     "outDir": "./dist", // Output directory for the compiled files
     "rootDir": "./src", // Input directory for the source files
     "esModuleInterop": true // Ensures compatibility with ES module imports
