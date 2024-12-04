@@ -1,4 +1,6 @@
-### Take fresh changes
+### Take fresh changes(at microservice repo)
+
+#### required to delete package-lock.json
 
 ```sh
 npm cache clean --force
