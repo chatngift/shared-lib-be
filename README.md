@@ -4,7 +4,7 @@ Shared common nodejs helper lib used by all microservices
 
 ### Step1: build
 
-- Make changes in shared-lib-be
+- Make changes in shared-lib-be a
 - run `npm run build `(it will build js file in `dist/` which will be imported by other microservices)
 
 ### Step 2: Install in microservice
