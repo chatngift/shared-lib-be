@@ -93,4 +93,16 @@ export const DateUtils = {
       _updatedDate: DateUtils.getCurDate(),
     };
   },
+
+  /**
+   * date and time before `agoHr`
+   * The `hoursAgo` is set to the current date and time, but no `createdDate` is included.
+   *
+   * @returns {Object} A `Date` object.
+   *
+   * @example
+   * const agoHr = DateUtils.agoHr(24);
+   * console.log(agoHr);
+   */
+  hoursAgo: (agoHr: number) => new Date(Date.now() - agoHr * 60 * 60 * 1000), // 24 hours in milliseconds
 };
