@@ -4,8 +4,10 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "docs": "npx typedoc"
+    "build": "tsc --no-watch",
+    "docs": "npx typedoc",
+    "prebuild": "echo Pre-build",
+    "postbuild": "echo Post-build"
   },
   "files": [
     "dist"

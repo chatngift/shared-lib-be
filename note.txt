@@ -1,0 +1,4 @@
+------ check circular dependancy ---
+npm install --save-dev madge
+npx madge --circular ./src
+-------

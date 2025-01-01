@@ -102,4 +102,17 @@ exports.DateUtils = {
      * console.log(agoHr);
      */
     hoursAgo: (agoHr) => new Date(Date.now() - agoHr * 60 * 60 * 1000), // 24 hours in milliseconds
+    /**
+     * Get UTC date as path YYYY/MM/DD `2024/12/28`
+     * @returns '2024/12/28'
+     */
+    getDatePath: () => {
+        const now = exports.DateUtils.getCurDate();
+        // Get the year, month, and day from the current date
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-indexed, so we add 1
+        const day = now.getDate().toString().padStart(2, "0"); // Ensures the day is always two digits
+        // Return the formatted path
+        return `${year}/${month}/${day}`;
+    },
 };

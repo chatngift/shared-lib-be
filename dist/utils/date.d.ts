@@ -90,4 +90,9 @@ export declare const DateUtils: {
      * console.log(agoHr);
      */
     hoursAgo: (agoHr: number) => Date;
+    /**
+     * Get UTC date as path YYYY/MM/DD `2024/12/28`
+     * @returns '2024/12/28'
+     */
+    getDatePath: () => string;
 };
