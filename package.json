@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc --no-watch",
+    "build": "tsc",
     "docs": "npx typedoc",
     "prebuild": "echo Pre-build",
     "postbuild": "echo Post-build"
@@ -12,15 +12,21 @@
   "files": [
     "dist"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "amqplib": "^0.10.5"
+  },
   "devDependencies": {
-    "typescript": "^5.5.4",
+    "@types/amqplib": "^0.10.6",
     "@types/node": "^16.0.0",
-    "typedoc": "^0.27.3"
+    "typedoc": "^0.27.3",
+    "typescript": "^5.5.4"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/chatngift/shared-lib-be.git"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "license": "MIT"
 }
