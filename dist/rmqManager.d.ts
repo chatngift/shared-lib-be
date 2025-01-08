@@ -6,7 +6,7 @@ export interface RMQConfig {
     vhost: string;
 }
 export interface RMQMessage {
-    from: "auth" | "story" | "sm" | "other";
+    from: "auth" | "st" | "sm" | "ec" | "comm" | "tr" | "oth";
     to?: string;
     context: string;
     body: object;
