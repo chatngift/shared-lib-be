@@ -40,7 +40,7 @@ export class RMQManager {
   }
 
   // Start consuming messages from the queue
-  async consume(callback: (msg: string) => void): Promise<void> {
+  async consume(callback: (msg: string | any) => void): Promise<void> {
     await this.consumer?.consume((msg) => {
       try {
         const result = JSON.parse(msg.content.toString());

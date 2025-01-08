@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorHandler = exports.LoggerV2 = exports.Logger = exports.DateUtils = exports.RMQManager = void 0;
-var rmqManager_1 = require("./rbtMQ/rmqManager");
-Object.defineProperty(exports, "RMQManager", { enumerable: true, get: function () { return rmqManager_1.RMQManager; } });
+exports.ErrorHandler = exports.LoggerV2 = exports.Logger = exports.DateUtils = exports.rmqManager = void 0;
+var rmqManager_1 = require("./rmqManager");
+Object.defineProperty(exports, "rmqManager", { enumerable: true, get: function () { return rmqManager_1.rmqManager; } });
 var date_1 = require("./utils/date");
 Object.defineProperty(exports, "DateUtils", { enumerable: true, get: function () { return date_1.DateUtils; } });
 var logger_1 = require("./utils/logger");
