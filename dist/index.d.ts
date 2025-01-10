@@ -1,4 +1,4 @@
-export { RMQManager, RMQMessage, RMQConfig } from "./rmqManager";
+export * from "./rmq";
 export { DateUtils } from "./utils/date";
 export { Logger } from "./utils/logger";
 export { LoggerV2 } from "./utils/loggerV2";
