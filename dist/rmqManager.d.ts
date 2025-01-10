@@ -1,3 +1,11 @@
+import { Channel } from "amqplib";
+export interface RMQMessage {
+    from: string;
+    to: string;
+    context: string;
+    body: any;
+    correlationId?: string;
+}
 export interface RMQConfig {
     hostname: string;
     port: number;
@@ -5,15 +13,14 @@ export interface RMQConfig {
     password: string;
     vhost: string;
 }
-export interface RMQMessage {
-    from: "auth" | "st" | "sm" | "ec" | "comm" | "tr" | "oth";
-    to?: string;
-    context: string;
-    body: object;
+export declare class RMQManager {
+    private connection;
+    private channel;
+    constructor();
+    initRMQ(config?: RMQConfig): Promise<void>;
+    getChannel(): Channel;
+    sendRPC(queueName: string, message: RMQMessage): Promise<any>;
+    private consumeRPC;
+    initQueue(queueName: string, actionHandler?: (message: RMQMessage, ansCallback: (msg: RMQMessage) => void) => void): Promise<void>;
+    closeConnection(): Promise<void>;
 }
-export declare const rmqManager: {
-    initRabbitMQ: (queue: string, config?: RMQConfig) => Promise<void>;
-    consumeMessages: (actionHandler: (message: RMQMessage, ansCallback: (message: RMQMessage) => void) => void) => Promise<void>;
-    shutdownRabbitMQ: () => Promise<void>;
-    sendMessageToQueue: (message: RMQMessage) => Promise<void>;
-};

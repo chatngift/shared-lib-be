@@ -13,7 +13,8 @@
     "dist"
   ],
   "dependencies": {
-    "amqplib": "^0.10.5"
+    "amqplib": "^0.10.5",
+    "uuid": "^11.0.4"
   },
   "devDependencies": {
     "@types/amqplib": "^0.10.6",

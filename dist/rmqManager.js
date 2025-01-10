@@ -12,73 +12,134 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rmqManager = void 0;
+exports.RMQManager = void 0;
 const amqplib_1 = __importDefault(require("amqplib"));
-// RabbitMQ connection and channel
-let connection;
-let channel;
-let queueName;
-// Initialize RabbitMQ connection
-const initRabbitMQ = (queue, config) => __awaiter(void 0, void 0, void 0, function* () {
-    queueName = queue;
-    try {
-        connection = yield amqplib_1.default.connect(Object.assign({ hostname: "127.0.0.1", port: 5672, username: "guest", password: "guest", vhost: "/" }, config));
-        channel = yield connection.createChannel();
-        yield channel.assertQueue(queue, { durable: true });
-        console.log("RMQ Lib: RabbitMQ connection established");
+const uuid_1 = require("uuid");
+class RMQManager {
+    constructor() {
+        this.connection = null;
+        this.channel = null;
     }
-    catch (error) {
-        console.error("RMQ Lib: Error initializing RabbitMQ:", error);
-        throw error;
-    }
-});
-// Send message to RabbitMQ (always send as a JSON object)
-const sendMessageToQueue = (message) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const messageBuffer = Buffer.from(JSON.stringify(message));
-        channel.sendToQueue(queueName, messageBuffer, {
-            persistent: true,
+    // Initialize RabbitMQ connection and channel
+    initRMQ(config) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Establish a connection to RabbitMQ
+                this.connection = yield amqplib_1.default.connect(Object.assign({ hostname: "127.0.0.1", port: 5672, username: "guest", password: "guest", vhost: "/" }, config));
+                // Create a channel from the connection
+                this.channel = yield this.connection.createChannel();
+                console.log("RMQ: Connection and channel initialized");
+            }
+            catch (error) {
+                console.error("RMQ: Error initializing RabbitMQ", error);
+                throw error;
+            }
         });
-        console.log(`RMQ Lib: [x] Sent: ${JSON.stringify(message)}`);
     }
-    catch (error) {
-        console.error("RMQ Lib: Error sending message to RabbitMQ:", error);
+    // Ensure the channel exists and return it
+    getChannel() {
+        if (!this.channel) {
+            throw new Error("Channel is not initialized");
+        }
+        return this.channel;
     }
-});
-// Listen for incoming messages from RabbitMQ (parse the message back to an object)
-const consumeMessages = (actionHandler) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log(`RMQ Lib: [*] Waiting for messages in ${queueName}. To exit press CTRL+C`);
-        // Start consuming messages
-        channel.consume(queueName, (msg) => {
-            if (msg) {
+    // Send an RPC request and wait for a response
+    sendRPC(queueName, message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const correlationId = (0, uuid_1.v4)();
+            return new Promise((resolve, reject) => {
                 try {
-                    // Parse the message content as JSON
-                    const parsedMessage = JSON.parse(msg.content.toString());
-                    console.log(`RMQ Lib: [x] Received:`, parsedMessage);
-                    channel.ack(msg);
-                    actionHandler(parsedMessage, (ans) => __awaiter(void 0, void 0, void 0, function* () { return yield sendMessageToQueue(ans); }));
+                    const channel = this.getChannel();
+                    // Assert that the queue exists before sending a message
+                    channel.assertQueue(queueName, { durable: true });
+                    // Declare a temporary reply queue for responses
+                    channel.assertQueue("", { exclusive: true }).then((q) => {
+                        // Send the request with the correlationId and replyTo
+                        channel.sendToQueue(queueName, Buffer.from(JSON.stringify(message)), {
+                            correlationId,
+                            replyTo: q.queue,
+                        });
+                        // Wait for a response in the reply queue
+                        this.consumeRPC(q.queue, correlationId, resolve, reject);
+                    });
                 }
                 catch (error) {
-                    console.error("RMQ Lib: Error parsing message:", error);
-                    channel.nack(msg); // Reject the message
+                    reject(error);
                 }
+            });
+        });
+    }
+    // Consume RPC responses from the reply queue
+    consumeRPC(replyQueue, correlationId, resolve, reject) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const channel = this.getChannel();
+                // Consume messages from the reply queue
+                channel.consume(replyQueue, (msg) => {
+                    if (msg && msg.properties.correlationId === correlationId) {
+                        resolve(JSON.parse(msg.content.toString())); // Resolve with the response
+                        channel.ack(msg); // Acknowledge the message
+                    }
+                }, { noAck: false });
             }
-        }, { noAck: false });
+            catch (error) {
+                reject(error); // Reject in case of error
+            }
+        });
     }
-    catch (error) {
-        console.error("RMQ Lib: Error consuming messages:", error);
+    // Get or create a named queue
+    initQueue(queueName, actionHandler) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const channel = this.getChannel();
+                // Declare the queue before consuming (make sure the queue exists)
+                yield channel.assertQueue(queueName, { durable: true });
+                // Start consuming messages continuously from the queue
+                channel.consume(queueName, (msg) => {
+                    if (msg) {
+                        const message = JSON.parse(msg.content.toString());
+                        console.log(`Received message from ${queueName}:`, message);
+                        // Check if correlationId is present in msg.properties
+                        const correlationId = msg.properties.correlationId;
+                        if (!correlationId) {
+                            console.error("No correlationId found in the message properties");
+                            return;
+                        }
+                        if (actionHandler) {
+                            actionHandler(message, (answerResp) => {
+                                // Send the response to the replyTo queue
+                                channel.sendToQueue(msg.properties.replyTo, Buffer.from(JSON.stringify(answerResp)), { correlationId: msg.properties.correlationId });
+                                // Acknowledge the message so it's removed from the queue
+                                channel.ack(msg);
+                            });
+                        }
+                        else {
+                            channel.ack(msg); // Acknowledge the message if no handler is provided
+                        }
+                    }
+                }, { noAck: false });
+            }
+            catch (error) {
+                console.error("Error in initializing or consuming queue:", error);
+            }
+        });
     }
-});
-// Gracefully shutdown RabbitMQ connection
-const shutdownRabbitMQ = () => __awaiter(void 0, void 0, void 0, function* () {
-    yield channel.close();
-    yield connection.close();
-    console.log("RMQ Lib: Shutted down gracefully...");
-});
-exports.rmqManager = {
-    initRabbitMQ,
-    consumeMessages,
-    shutdownRabbitMQ,
-    sendMessageToQueue,
-};
+    // Close the RabbitMQ connection
+    closeConnection() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (this.channel) {
+                    yield this.channel.close();
+                }
+                if (this.connection) {
+                    yield this.connection.close();
+                }
+                console.log("RMQ: Connection closed");
+            }
+            catch (error) {
+                console.error("RMQ: Error closing connection", error);
+            }
+        });
+    }
+}
+exports.RMQManager = RMQManager;
