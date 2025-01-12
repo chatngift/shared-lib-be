@@ -28,11 +28,56 @@ class RMQManager {
                 this.connection = yield amqplib_1.default.connect(Object.assign({ hostname: "127.0.0.1", port: 5672, username: "guest", password: "guest", vhost: "/" }, config));
                 // Create a channel from the connection
                 this.channel = yield this.connection.createChannel();
-                console.log("RMQ: Connection and channel initialized");
+                // console.log("RMQ: Connection and channel initialized");
             }
             catch (error) {
                 console.error("RMQ: Error initializing RabbitMQ", error);
                 throw error;
+            }
+        });
+    }
+    // Get or create a named queue
+    initQueue(queueName, actionHandler) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const channel = this.getChannel();
+                // Declare the queue before consuming (make sure the queue exists)
+                yield channel.assertQueue(queueName, { durable: true });
+                // Start consuming messages continuously from the queue
+                channel.consume(queueName, (msg) => {
+                    if (msg) {
+                        const message = JSON.parse(msg.content.toString());
+                        console.log(`Received message from ${queueName}:`, message);
+                        // Check if correlationId is present in msg.properties
+                        const correlationId = msg.properties.correlationId;
+                        if (!correlationId) {
+                            console.error("No correlationId found in the message properties");
+                            return;
+                        }
+                        if (actionHandler) {
+                            actionHandler(message, (answerResp) => {
+                                // Send the response to the replyTo queue
+                                channel.sendToQueue(msg.properties.replyTo, Buffer.from(JSON.stringify(answerResp)), { correlationId: msg.properties.correlationId });
+                                // Acknowledge the message so it's removed from the queue
+                                channel.ack(msg);
+                            });
+                        }
+                        else {
+                            channel.ack(msg); // Acknowledge the message if no handler is provided
+                        }
+                    }
+                }, { noAck: false });
+            }
+            catch (error) {
+                console.error("Error in initializing or consuming queue:", error);
+                // console.error("RMQ: Error initializing RabbitMQ", error);
+                if (error.code === "ECONNREFUSED") {
+                    console.log("RMQ: RabbitMQ connection refused. Retrying...");
+                    // setTimeout(() => this.reconnect(), this.retryInterval); // Retry after 5 seconds
+                }
+                else {
+                    throw error;
+                }
             }
         });
     }
@@ -84,43 +129,6 @@ class RMQManager {
             }
             catch (error) {
                 reject(error); // Reject in case of error
-            }
-        });
-    }
-    // Get or create a named queue
-    initQueue(queueName, actionHandler) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const channel = this.getChannel();
-                // Declare the queue before consuming (make sure the queue exists)
-                yield channel.assertQueue(queueName, { durable: true });
-                // Start consuming messages continuously from the queue
-                channel.consume(queueName, (msg) => {
-                    if (msg) {
-                        const message = JSON.parse(msg.content.toString());
-                        console.log(`Received message from ${queueName}:`, message);
-                        // Check if correlationId is present in msg.properties
-                        const correlationId = msg.properties.correlationId;
-                        if (!correlationId) {
-                            console.error("No correlationId found in the message properties");
-                            return;
-                        }
-                        if (actionHandler) {
-                            actionHandler(message, (answerResp) => {
-                                // Send the response to the replyTo queue
-                                channel.sendToQueue(msg.properties.replyTo, Buffer.from(JSON.stringify(answerResp)), { correlationId: msg.properties.correlationId });
-                                // Acknowledge the message so it's removed from the queue
-                                channel.ack(msg);
-                            });
-                        }
-                        else {
-                            channel.ack(msg); // Acknowledge the message if no handler is provided
-                        }
-                    }
-                }, { noAck: false });
-            }
-            catch (error) {
-                console.error("Error in initializing or consuming queue:", error);
             }
         });
     }

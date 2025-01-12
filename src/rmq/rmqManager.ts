@@ -38,10 +38,68 @@ export class RMQManager {
 
       // Create a channel from the connection
       this.channel = await this.connection.createChannel();
-      console.log("RMQ: Connection and channel initialized");
+      // console.log("RMQ: Connection and channel initialized");
     } catch (error) {
       console.error("RMQ: Error initializing RabbitMQ", error);
       throw error;
+    }
+  }
+
+  // Get or create a named queue
+  public async initQueue(
+    queueName: string,
+    actionHandler?: (
+      message: RMQMessage,
+      ansCallback: (msg: RMQMessage) => void
+    ) => void
+  ): Promise<void> {
+    try {
+      const channel = this.getChannel();
+      // Declare the queue before consuming (make sure the queue exists)
+      await channel.assertQueue(queueName, { durable: true });
+
+      // Start consuming messages continuously from the queue
+      channel.consume(
+        queueName,
+        (msg: Message | null) => {
+          if (msg) {
+            const message = JSON.parse(msg.content.toString());
+            console.log(`Received message from ${queueName}:`, message);
+
+            // Check if correlationId is present in msg.properties
+            const correlationId = msg.properties.correlationId;
+            if (!correlationId) {
+              console.error("No correlationId found in the message properties");
+              return;
+            }
+
+            if (actionHandler) {
+              actionHandler(message, (answerResp: RMQMessage) => {
+                // Send the response to the replyTo queue
+                channel.sendToQueue(
+                  msg.properties.replyTo,
+                  Buffer.from(JSON.stringify(answerResp)),
+                  { correlationId: msg.properties.correlationId }
+                );
+                // Acknowledge the message so it's removed from the queue
+                channel.ack(msg);
+              });
+            } else {
+              channel.ack(msg); // Acknowledge the message if no handler is provided
+            }
+          }
+        },
+        { noAck: false }
+      );
+    } catch (error: any) {
+      console.error("Error in initializing or consuming queue:", error);
+      // console.error("RMQ: Error initializing RabbitMQ", error);
+      if (error.code === "ECONNREFUSED") {
+        console.log("RMQ: RabbitMQ connection refused. Retrying...");
+        // setTimeout(() => this.reconnect(), this.retryInterval); // Retry after 5 seconds
+      } else {
+        throw error;
+      }
     }
   }
 
@@ -103,57 +161,6 @@ export class RMQManager {
       );
     } catch (error) {
       reject(error); // Reject in case of error
-    }
-  }
-
-  // Get or create a named queue
-  public async initQueue(
-    queueName: string,
-    actionHandler?: (
-      message: RMQMessage,
-      ansCallback: (msg: RMQMessage) => void
-    ) => void
-  ): Promise<void> {
-    try {
-      const channel = this.getChannel();
-      // Declare the queue before consuming (make sure the queue exists)
-      await channel.assertQueue(queueName, { durable: true });
-
-      // Start consuming messages continuously from the queue
-      channel.consume(
-        queueName,
-        (msg: Message | null) => {
-          if (msg) {
-            const message = JSON.parse(msg.content.toString());
-            console.log(`Received message from ${queueName}:`, message);
-
-            // Check if correlationId is present in msg.properties
-            const correlationId = msg.properties.correlationId;
-            if (!correlationId) {
-              console.error("No correlationId found in the message properties");
-              return;
-            }
-
-            if (actionHandler) {
-              actionHandler(message, (answerResp: RMQMessage) => {
-                // Send the response to the replyTo queue
-                channel.sendToQueue(
-                  msg.properties.replyTo,
-                  Buffer.from(JSON.stringify(answerResp)),
-                  { correlationId: msg.properties.correlationId }
-                );
-                // Acknowledge the message so it's removed from the queue
-                channel.ack(msg);
-              });
-            } else {
-              channel.ack(msg); // Acknowledge the message if no handler is provided
-            }
-          }
-        },
-        { noAck: false }
-      );
-    } catch (error) {
-      console.error("Error in initializing or consuming queue:", error);
     }
   }
 

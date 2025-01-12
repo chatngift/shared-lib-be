@@ -1,21 +1,8 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorHandler = exports.LoggerV2 = exports.Logger = exports.DateUtils = void 0;
-__exportStar(require("./rmq"), exports);
+exports.ErrorHandler = exports.LoggerV2 = exports.Logger = exports.DateUtils = exports.RMQManager = void 0;
+var rmqManager_1 = require("./rmq/rmqManager");
+Object.defineProperty(exports, "RMQManager", { enumerable: true, get: function () { return rmqManager_1.RMQManager; } });
 var date_1 = require("./utils/date");
 Object.defineProperty(exports, "DateUtils", { enumerable: true, get: function () { return date_1.DateUtils; } });
 var logger_1 = require("./utils/logger");

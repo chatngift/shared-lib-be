@@ -18,9 +18,9 @@ export declare class RMQManager {
     private channel;
     constructor();
     initRMQ(config?: RMQConfig): Promise<void>;
+    initQueue(queueName: string, actionHandler?: (message: RMQMessage, ansCallback: (msg: RMQMessage) => void) => void): Promise<void>;
     getChannel(): Channel;
     sendRPC(queueName: string, message: RMQMessage): Promise<any>;
     private consumeRPC;
-    initQueue(queueName: string, actionHandler?: (message: RMQMessage, ansCallback: (msg: RMQMessage) => void) => void): Promise<void>;
     closeConnection(): Promise<void>;
 }
