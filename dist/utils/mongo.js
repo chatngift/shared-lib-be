@@ -28,4 +28,16 @@ exports.MongoUtils = {
         const cleanId = exports.MongoUtils.get(id); // remove any prefix
         return `${prefix}_${cleanId}`;
     },
+    toUserId: (id) => {
+        return exports.MongoUtils.set("user", id);
+    },
+    toAddressId: (id) => {
+        return exports.MongoUtils.set("addr", id);
+    },
+    toStoryId: (id) => {
+        return exports.MongoUtils.set("story", id);
+    },
+    toMediaId: (id) => {
+        return exports.MongoUtils.set("media", id);
+    },
 };

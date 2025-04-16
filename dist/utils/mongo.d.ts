@@ -19,4 +19,8 @@ export declare const MongoUtils: {
   output: 'addr_314142'
      */
     set: (prefix: string, id: string) => string;
+    toUserId: (id: string) => string;
+    toAddressId: (id: string) => string;
+    toStoryId: (id: string) => string;
+    toMediaId: (id: string) => string;
 };

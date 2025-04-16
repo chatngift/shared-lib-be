@@ -26,4 +26,20 @@ output: 'addr_314142'
     const cleanId = MongoUtils.get(id); // remove any prefix
     return `${prefix}_${cleanId}`;
   },
+
+  toUserId: (id: string): string => {
+    return MongoUtils.set("user", id);
+  },
+
+  toAddressId: (id: string): string => {
+    return MongoUtils.set("addr", id);
+  },
+
+  toStoryId: (id: string): string => {
+    return MongoUtils.set("story", id);
+  },
+
+  toMediaId: (id: string): string => {
+    return MongoUtils.set("media", id);
+  },
 };
