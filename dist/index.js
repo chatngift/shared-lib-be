@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorHandler = exports.LoggerV2 = exports.Logger = exports.DateUtils = exports.RMQManager = void 0;
+exports.MongoUtils = exports.ErrorHandler = exports.LoggerV2 = exports.Logger = exports.DateUtils = exports.RMQManager = void 0;
 var rmqManager_1 = require("./rmq/rmqManager");
 Object.defineProperty(exports, "RMQManager", { enumerable: true, get: function () { return rmqManager_1.RMQManager; } });
 var date_1 = require("./utils/date");
@@ -11,3 +11,5 @@ var loggerV2_1 = require("./utils/loggerV2");
 Object.defineProperty(exports, "LoggerV2", { enumerable: true, get: function () { return loggerV2_1.LoggerV2; } });
 var errorHandler_1 = require("./utils/errorHandler");
 Object.defineProperty(exports, "ErrorHandler", { enumerable: true, get: function () { return errorHandler_1.ErrorHandler; } });
+var mongo_1 = require("./utils/mongo");
+Object.defineProperty(exports, "MongoUtils", { enumerable: true, get: function () { return mongo_1.MongoUtils; } });
