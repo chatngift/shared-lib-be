@@ -23,6 +23,17 @@ exports.DateUtils = {
      * Gets the current date as a UTC string.
      * This method returns the date in UTC format as a string.
      *
+     * @returns {string} The current date in UTC string format (e.g., "2025-01-12T12:34:56.789Z").
+     *
+     * @example
+     * const utcDateStr = DateUtils.getUTCDateStr();
+     * console.log(utcDateStr); //  output: "2025-01-12T12:34:56.789Z"
+     */
+    getUTCDateStr: () => new Date().toUTCString(),
+    /**
+     * Gets the current date as a UTC string.
+     * This method returns the date in UTC format as a string.
+     *
      * @returns {string} The current date in UTC string format (e.g., "Wed, 04 Dec 2024 10:00:00 GMT").
      *
      * @example
