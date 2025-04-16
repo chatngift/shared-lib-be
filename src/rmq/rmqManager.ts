@@ -27,17 +27,16 @@ export class RMQManager {
   async initRMQ(config?: RMQConfig): Promise<void> {
     try {
       // Establish a connection to RabbitMQ
-      this.connection = await amqp.connect({
-        hostname: "127.0.0.1",
-        port: 5672,
-        username: "guest",
-        password: "guest",
-        vhost: "/",
-        ...config,
-      });
-
+      // this.connection = await amqp.connect({
+      //   hostname: "127.0.0.1",
+      //   port: 5672,
+      //   username: "guest",
+      //   password: "guest",
+      //   vhost: "/",
+      //   ...config,
+      // });
       // Create a channel from the connection
-      this.channel = await this.connection.createChannel();
+      // this.channel = await this.connection.createChannel();
       // console.log("RMQ: Connection and channel initialized");
     } catch (error) {
       console.error("RMQ: Error initializing RabbitMQ", error);
@@ -171,7 +170,7 @@ export class RMQManager {
         await this.channel.close();
       }
       if (this.connection) {
-        await this.connection.close();
+        // await this.connection.close();
       }
       console.log("RMQ: Connection closed");
     } catch (error) {

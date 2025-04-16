@@ -2,7 +2,7 @@ import { Channel } from "amqplib";
 import { Producer } from "./config/producer";
 import { Consumer } from "./config/consumer";
 import { RabbitMQConfig } from "./config/rmqTypes";
-import { RabbitMQConnection } from "./config/rmqConnection";
+// import { RabbitMQConnection } from "./config/rmqConnection";
 import { createConfig } from "./config/rmqConfig";
 
 export class RMQManager {
@@ -19,15 +19,13 @@ export class RMQManager {
 
   // Initialize the queue, create producer and consumer
   async initialize(): Promise<void> {
-    const connection = new RabbitMQConnection(createConfig(this.config));
-    await connection.connect();
-    this.channel = connection.getChannel();
-
-    this.producer = new Producer(this.channel, this.queueName);
-    this.consumer = new Consumer(this.channel, this.queueName);
-
-    await this.producer.createQueue();
-    console.log(`Queue ${this.queueName} initialized.`);
+    // const connection = new RabbitMQConnection(createConfig(this.config));
+    // await connection.connect();
+    // this.channel = connection.getChannel();
+    // this.producer = new Producer(this.channel, this.queueName);
+    // this.consumer = new Consumer(this.channel, this.queueName);
+    // await this.producer.createQueue();
+    // console.log(`Queue ${this.queueName} initialized.`);
   }
 
   // Publish a message to the queue

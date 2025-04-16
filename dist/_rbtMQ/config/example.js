@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.example = example;
-const rmqConnection_1 = require("./rmqConnection");
+// import { RabbitMQConnection } from "./rmqConnection";
 const rmqConfig_1 = require("./rmqConfig");
 // import { MessageHandler } from "./types";
 function example() {
@@ -24,11 +24,11 @@ function example() {
             password: "guest",
         });
         // Create connection
-        const connection = new rmqConnection_1.RabbitMQConnection(config);
-        yield connection.connect();
+        // const connection = new RabbitMQConnection(config);
+        // await connection.connect();
         try {
-            const channel = connection.getChannel();
-            const queueName = "myQueue";
+            // const channel = connection.getChannel();
+            // const queueName = "myQueue";
             // await channel.assertQueue("myQueue", { durable: true });
             // console.log("Queue 'myQueue' created.");
             // // Send a message

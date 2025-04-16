@@ -8,12 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RMQManager = void 0;
-const amqplib_1 = __importDefault(require("amqplib"));
 const uuid_1 = require("uuid");
 class RMQManager {
     constructor() {
@@ -25,9 +21,16 @@ class RMQManager {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // Establish a connection to RabbitMQ
-                this.connection = yield amqplib_1.default.connect(Object.assign({ hostname: "127.0.0.1", port: 5672, username: "guest", password: "guest", vhost: "/" }, config));
+                // this.connection = await amqp.connect({
+                //   hostname: "127.0.0.1",
+                //   port: 5672,
+                //   username: "guest",
+                //   password: "guest",
+                //   vhost: "/",
+                //   ...config,
+                // });
                 // Create a channel from the connection
-                this.channel = yield this.connection.createChannel();
+                // this.channel = await this.connection.createChannel();
                 // console.log("RMQ: Connection and channel initialized");
             }
             catch (error) {
@@ -140,7 +143,7 @@ class RMQManager {
                     yield this.channel.close();
                 }
                 if (this.connection) {
-                    yield this.connection.close();
+                    // await this.connection.close();
                 }
                 console.log("RMQ: Connection closed");
             }

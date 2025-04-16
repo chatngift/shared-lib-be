@@ -10,10 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RMQManager = void 0;
-const producer_1 = require("./config/producer");
-const consumer_1 = require("./config/consumer");
-const rmqConnection_1 = require("./config/rmqConnection");
-const rmqConfig_1 = require("./config/rmqConfig");
 class RMQManager {
     constructor(queueName, config) {
         this.config = config;
@@ -22,13 +18,13 @@ class RMQManager {
     // Initialize the queue, create producer and consumer
     initialize() {
         return __awaiter(this, void 0, void 0, function* () {
-            const connection = new rmqConnection_1.RabbitMQConnection((0, rmqConfig_1.createConfig)(this.config));
-            yield connection.connect();
-            this.channel = connection.getChannel();
-            this.producer = new producer_1.Producer(this.channel, this.queueName);
-            this.consumer = new consumer_1.Consumer(this.channel, this.queueName);
-            yield this.producer.createQueue();
-            console.log(`Queue ${this.queueName} initialized.`);
+            // const connection = new RabbitMQConnection(createConfig(this.config));
+            // await connection.connect();
+            // this.channel = connection.getChannel();
+            // this.producer = new Producer(this.channel, this.queueName);
+            // this.consumer = new Consumer(this.channel, this.queueName);
+            // await this.producer.createQueue();
+            // console.log(`Queue ${this.queueName} initialized.`);
         });
     }
     // Publish a message to the queue
